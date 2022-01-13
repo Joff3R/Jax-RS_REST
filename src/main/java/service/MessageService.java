@@ -38,9 +38,10 @@ public class MessageService {
         while (resultSet.next()) {
             var message = new Message();
 
+
             message.setId(resultSet.getInt("id"));
             message.setMessage(resultSet.getString("message"));
-            message.setCreated(resultSet.getDate("created"));
+            message.setCreated(resultSet.getDate("created").toLocalDate());
             message.setAuthor(resultSet.getString("author"));
 
             messagesList.add(message);
@@ -48,18 +49,18 @@ public class MessageService {
         return messagesList;
     }
 
-    public List<Message> getAllMessagesForYear(int year) throws SQLException {
-        var messagesForYear = new ArrayList<Message>();
-        var calendar = Calendar.getInstance();
-        var allMessages = getAllMessages();
-        allMessages.forEach(message -> {
-            calendar.setTime(message.getCreated());
-            if (calendar.get(Calendar.YEAR) == year) {
-                messagesForYear.add(message);
-            }
-        });
-        return messagesForYear;
-    }
+//    public List<Message> getAllMessagesForYear(int year) throws SQLException {
+//        var messagesForYear = new ArrayList<Message>();
+//        var calendar = Calendar.getInstance();
+//        var allMessages = getAllMessages();
+//        allMessages.forEach(message -> {
+//            calendar.setTime(message.getCreated());
+//            if (calendar.get(Calendar.YEAR) == year) {
+//                messagesForYear.add(message);
+//            }
+//        });
+//        return messagesForYear;
+//    }
 
     public List<Message> getAllMessagesPaginated(int start, int size) throws SQLException {
         var list = new ArrayList<>(getAllMessages());
@@ -98,6 +99,8 @@ public class MessageService {
                     .created(resultMessage.getCreated())
                     .author(resultMessage.getAuthor())
                     .build();
+            //todo: it returns old value, doesnt update the database
+
         }
 
         return null;

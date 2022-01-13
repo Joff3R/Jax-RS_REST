@@ -8,7 +8,6 @@ import lombok.Setter;
 import lombok.ToString;
 
 import java.time.LocalDate;
-import java.util.Date;
 
 
 @Getter
@@ -16,11 +15,11 @@ import java.util.Date;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
-@Builder (toBuilder = true)
+@Builder(toBuilder = true)
 public class Message {
 
     private int id;
     private String message;
-    private Date created;
+    private LocalDate created;
     private String author;
 }

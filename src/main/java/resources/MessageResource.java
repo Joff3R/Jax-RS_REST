@@ -34,7 +34,7 @@ public class MessageResource {
     @GET
     public List<Message> getMessages(@BeanParam MessageFilterBean bean) throws SQLException {
         if (bean.getYear() > 0) {
-            return messageService.getAllMessagesForYear(bean.getYear());
+//            return messageService.getAllMessagesForYear(bean.getYear());
         }
         if (bean.getStart() >= 0 && bean.getSize() > 0) {
             return messageService.getAllMessagesPaginated(bean.getStart(), bean.getSize());
