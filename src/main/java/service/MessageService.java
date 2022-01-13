@@ -3,6 +3,11 @@ package service;
 import database.DatabaseClass;
 import model.Message;
 
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
@@ -10,22 +15,44 @@ import java.util.Map;
 
 public class MessageService {
 
+    public static final String username = "root";
+    public static final String password = "root";
+    public static final String databaseURL = "jdbc:mysql://localhost:3306/app?autoReconnect=true&useSSL=false";
+    public static final String jdbcDriver = "com.mysql.cj.jdbc.Driver";
+    public Connection connection;
+
     private Map<Long, Message> messages = DatabaseClass.getMessages();
 
-
-    public MessageService() {
-        messages.put(1L, new Message(1, "ABC", "xd"));
-        messages.put(2L, new Message(2, "XYZ", "dx"));
+    public MessageService() throws ClassNotFoundException, SQLException {
+        Class.forName(jdbcDriver);
+        connection = DriverManager.getConnection(databaseURL, username, password);
     }
 
-    public List<Message> getAllMessages() {
-        return new ArrayList<>(messages.values());
+    public List<Message> getAllMessages() throws SQLException {
+        var messagesList = new ArrayList<Message>();
+        String query = "select * from message";
+        var resultSet = connection
+                .createStatement()
+                .executeQuery(query);
+
+        while (resultSet.next()) {
+            var message = new Message();
+
+            message.setId(resultSet.getInt("id"));
+            message.setMessage(resultSet.getString("message"));
+            message.setCreated(resultSet.getDate("created"));
+            message.setAuthor(resultSet.getString("author"));
+
+            messagesList.add(message);
+        }
+        return messagesList;
     }
 
-    public List<Message> getAllMessagesForYear(int year) {
+    public List<Message> getAllMessagesForYear(int year) throws SQLException {
         var messagesForYear = new ArrayList<Message>();
         var calendar = Calendar.getInstance();
-        messages.values().forEach(message -> {
+        var allMessages = getAllMessages();
+        allMessages.forEach(message -> {
             calendar.setTime(message.getCreated());
             if (calendar.get(Calendar.YEAR) == year) {
                 messagesForYear.add(message);
@@ -34,27 +61,46 @@ public class MessageService {
         return messagesForYear;
     }
 
-    public List<Message> getAllMessagesPaginated(int start, int size) {
-        var list = new ArrayList<>(messages.values());
+    public List<Message> getAllMessagesPaginated(int start, int size) throws SQLException {
+        var list = new ArrayList<>(getAllMessages());
         return start + size > list.size() ? new ArrayList<>() : list.subList(start, start + size);
     }
 
-    public Message getMessage(long id) {
-        return messages.get(id);
+    public Message getMessage(int id) throws SQLException {
+        return getAllMessages().get(id);
     }
 
     public Message addMessage(Message message) {
-        message.setId(messages.size() + 1);
-        messages.put(message.getId(), message);
+        String query = MessageFormat.format("insert into message values ({0}, {1}, {2}, {3})", message.getId(), message.getMessage(), message.getCreated(), message.getAuthor());
+//        message.setId(messages.size() + 1);
+//        messages.put(message.getId(), message);
+        try {
+            PreparedStatement preparedStatement = connection.prepareStatement(query);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
         return message;
     }
 
-    public Message updateMessage(Message message) {
-        if (message.getId() <= 0) {
+    public Message updateMessage(Message message) throws SQLException {
+        var messageId = message.getId();
+        if (messageId <= 0) {
             return null;
         }
-        messages.put(message.getId(), message);
-        return message;
+        var result = getAllMessages().stream()
+                .filter(e -> message.getId() == e.getId())
+                .toList();
+
+        if (!result.isEmpty()) {
+            var resultMessage = result.get(0);
+            return message.toBuilder()
+                    .message(resultMessage.getMessage())
+                    .created(resultMessage.getCreated())
+                    .author(resultMessage.getAuthor())
+                    .build();
+        }
+
+        return null;
     }
 
     public Message removeMessage(long id) {

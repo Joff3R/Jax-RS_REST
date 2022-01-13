@@ -18,6 +18,7 @@ import resources.beans.MessageFilterBean;
 import service.MessageService;
 
 import java.net.URI;
+import java.sql.SQLException;
 import java.util.List;
 
 @Path("/messages")
@@ -27,8 +28,11 @@ public class MessageResource {
 
     private MessageService messageService = new MessageService();
 
+    public MessageResource() throws SQLException, ClassNotFoundException {
+    }
+
     @GET
-    public List<Message> getMessages(@BeanParam MessageFilterBean bean) {
+    public List<Message> getMessages(@BeanParam MessageFilterBean bean) throws SQLException {
         if (bean.getYear() > 0) {
             return messageService.getAllMessagesForYear(bean.getYear());
         }
@@ -50,20 +54,20 @@ public class MessageResource {
 
     @PUT
     @Path("/{messageId}")
-    public Message updateMessage(@PathParam("messageId") long messageId, Message message) {
+    public Message updateMessage(@PathParam("messageId") int messageId, Message message) throws SQLException {
         message.setId(messageId);
         return messageService.updateMessage(message);
     }
 
     @DELETE
     @Path("/{messageId}")
-    public void deleteMessage(@PathParam("messageId") long messageId) {
+    public void deleteMessage(@PathParam("messageId") int messageId) {
         messageService.removeMessage(messageId);
     }
 
     @GET
     @Path("/{messageId}")
-    public Message getMessage(@PathParam("messageId") long messageId) {
+    public Message getMessage(@PathParam("messageId") int messageId) throws SQLException {
         return messageService.getMessage(messageId);
     }
 
