@@ -1,5 +1,6 @@
 package resources;
 
+import exception.DataNotFoundException;
 import jakarta.ws.rs.BeanParam;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.DELETE;
@@ -55,7 +56,7 @@ public class MessageResource {
 
     @PUT
     @Path("/{messageId}")
-    public Message updateMessage(@PathParam("messageId") int messageId, Message message) throws SQLException {
+    public Message updateMessage(@PathParam("messageId") int messageId, Message message) {
         message.setId(messageId);
         return messageService.updateMessage(message);
     }
@@ -68,9 +69,7 @@ public class MessageResource {
 
     @GET
     @Path("/{messageId}")
-    public Message getMessage(@PathParam("messageId") int messageId) throws SQLException {
+    public Message getMessage(@PathParam("messageId") int messageId) {
         return messageService.getMessage(messageId);
     }
-
-
 }

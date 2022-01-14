@@ -14,7 +14,6 @@ import java.time.LocalDate;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@ToString
 @Builder(toBuilder = true)
 public class Message {
 

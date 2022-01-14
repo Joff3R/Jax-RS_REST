@@ -6,7 +6,6 @@ import model.Message;
 import java.sql.Connection;
 import java.sql.Date;
 import java.sql.DriverManager;
-import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -71,7 +70,7 @@ public class MessageService {
         return start + size > list.size() ? new ArrayList<>() : list.subList(start, start + size);
     }
 
-    public Message getMessage(int id) {
+    public Message getMessage(int id){
         var message = new Message();
         String query = "select * from message where id = " + id;
 
@@ -130,7 +129,15 @@ public class MessageService {
 
     }
 
-    public Message removeMessage(long id) {
-        return messages.remove(id);
+    public void removeMessage(int id) {
+        String query = ("delete from message where id = ?");
+
+        try {
+            var preparedStatement = connection.prepareStatement(query);
+            preparedStatement.setInt(1, id);
+            preparedStatement.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 }
