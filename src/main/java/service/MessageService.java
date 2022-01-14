@@ -99,11 +99,11 @@ public class MessageService {
 //        messages.put(message.getId(), message);
 
         try {
-            PreparedStatement preparedStatement = connection.prepareStatement(query);
+            var preparedStatement = connection.prepareStatement(query);
             preparedStatement.setInt(1, message.getId());
             preparedStatement.setString(2, message.getMessage());
             preparedStatement.setDate(3, Date.valueOf(message.getCreated()));
-            preparedStatement.setInt(4, message.getId());
+            preparedStatement.setString(4, message.getAuthor());
             preparedStatement.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
@@ -112,26 +112,22 @@ public class MessageService {
     }
 
     public Message updateMessage(Message message) {
-        var messageId = message.getId();
-        if (messageId <= 0) {
-            return null;
+        String query = ("update message set message = ?, created = ?, author = ? where id = ?");
+//        message.setId(messages.size() + 1);
+//        messages.put(message.getId(), message);
+
+        try {
+            var preparedStatement = connection.prepareStatement(query);
+            preparedStatement.setString(1, message.getMessage());
+            preparedStatement.setDate(2, Date.valueOf(message.getCreated()));
+            preparedStatement.setString(3, message.getAuthor());
+            preparedStatement.setInt(4, message.getId());
+            preparedStatement.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
-        var result = getAllMessages().stream()
-                .filter(e -> message.getId() == e.getId())
-                .toList();
+        return message;
 
-        if (!result.isEmpty()) {
-            var resultMessage = result.get(0);
-            return message.toBuilder()
-                    .message(resultMessage.getMessage())
-                    .created(resultMessage.getCreated())
-                    .author(resultMessage.getAuthor())
-                    .build();
-            //todo: it returns old value, doesnt update the database
-
-        }
-
-        return null;
     }
 
     public Message removeMessage(long id) {
