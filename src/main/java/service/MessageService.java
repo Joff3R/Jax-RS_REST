@@ -4,12 +4,11 @@ import database.DatabaseClass;
 import model.Message;
 
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.text.MessageFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
 
@@ -28,24 +27,29 @@ public class MessageService {
         connection = DriverManager.getConnection(databaseURL, username, password);
     }
 
-    public List<Message> getAllMessages() throws SQLException {
+    public List<Message> getAllMessages() {
         var messagesList = new ArrayList<Message>();
         String query = "select * from message";
-        var resultSet = connection
-                .createStatement()
-                .executeQuery(query);
+        try {
+            var resultSet = connection
+                    .createStatement()
+                    .executeQuery(query);
 
-        while (resultSet.next()) {
-            var message = new Message();
+            while (resultSet.next()) {
+                var message = new Message();
 
 
-            message.setId(resultSet.getInt("id"));
-            message.setMessage(resultSet.getString("message"));
-            message.setCreated(resultSet.getDate("created").toLocalDate());
-            message.setAuthor(resultSet.getString("author"));
+                message.setId(resultSet.getInt("id"));
+                message.setMessage(resultSet.getString("message"));
+                message.setCreated(resultSet.getDate("created").toLocalDate());
+                message.setAuthor(resultSet.getString("author"));
 
-            messagesList.add(message);
+                messagesList.add(message);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
+
         return messagesList;
     }
 
@@ -62,28 +66,52 @@ public class MessageService {
 //        return messagesForYear;
 //    }
 
-    public List<Message> getAllMessagesPaginated(int start, int size) throws SQLException {
+    public List<Message> getAllMessagesPaginated(int start, int size) {
         var list = new ArrayList<>(getAllMessages());
         return start + size > list.size() ? new ArrayList<>() : list.subList(start, start + size);
     }
 
-    public Message getMessage(int id) throws SQLException {
-        return getAllMessages().get(id);
-    }
+    public Message getMessage(int id) {
+        var message = new Message();
+        String query = "select * from message where id = " + id;
 
-    public Message addMessage(Message message) {
-        String query = MessageFormat.format("insert into message values ({0}, {1}, {2}, {3})", message.getId(), message.getMessage(), message.getCreated(), message.getAuthor());
-//        message.setId(messages.size() + 1);
-//        messages.put(message.getId(), message);
         try {
-            PreparedStatement preparedStatement = connection.prepareStatement(query);
+            var resultSet = connection
+                    .createStatement()
+                    .executeQuery(query);
+
+            while (resultSet.next()) {
+                message.setId(resultSet.getInt("id"));
+                message.setMessage(resultSet.getString("message"));
+                message.setCreated(resultSet.getDate("created").toLocalDate());
+                message.setAuthor(resultSet.getString("author"));
+            }
         } catch (SQLException e) {
             e.printStackTrace();
         }
         return message;
     }
 
-    public Message updateMessage(Message message) throws SQLException {
+
+    public Message addMessage(Message message) {
+        String query = ("insert into message values (?,?,?,?)");
+//        message.setId(messages.size() + 1);
+//        messages.put(message.getId(), message);
+
+        try {
+            PreparedStatement preparedStatement = connection.prepareStatement(query);
+            preparedStatement.setInt(1, message.getId());
+            preparedStatement.setString(2, message.getMessage());
+            preparedStatement.setDate(3, Date.valueOf(message.getCreated()));
+            preparedStatement.setInt(4, message.getId());
+            preparedStatement.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return message;
+    }
+
+    public Message updateMessage(Message message) {
         var messageId = message.getId();
         if (messageId <= 0) {
             return null;

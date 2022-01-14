@@ -9,15 +9,11 @@ import jakarta.ws.rs.PUT;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
-import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MediaType;
-import jakarta.ws.rs.core.Response;
-import jakarta.ws.rs.core.UriInfo;
 import model.Message;
 import resources.beans.MessageFilterBean;
 import service.MessageService;
 
-import java.net.URI;
 import java.sql.SQLException;
 import java.util.List;
 
@@ -42,14 +38,19 @@ public class MessageResource {
         return messageService.getAllMessages();
     }
 
+//    @POST
+//    public Response addMessage(Message message, @Context UriInfo uriInfo) {
+//        var newMessage = messageService.addMessage(message);
+//        String newId = String.valueOf(newMessage.getId());
+//        URI uri = uriInfo.getAbsolutePathBuilder().path(newId).build();
+//        return Response.created(uri)
+//                .entity(newMessage)
+//                .build();
+//    }
+
     @POST
-    public Response addMessage(Message message, @Context UriInfo uriInfo) {
-        var newMessage = messageService.addMessage(message);
-        String newId = String.valueOf(newMessage.getId());
-        URI uri = uriInfo.getAbsolutePathBuilder().path(newId).build();
-        return Response.created(uri)
-                .entity(newMessage)
-                .build();
+    public Message addMessage2(Message message) {
+        return messageService.addMessage(message);
     }
 
     @PUT
