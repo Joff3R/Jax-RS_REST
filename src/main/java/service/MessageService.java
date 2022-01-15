@@ -19,8 +19,6 @@ public class MessageService {
     public static final String jdbcDriver = "com.mysql.cj.jdbc.Driver";
     public Connection connection;
 
-    private Map<Long, Message> messages = DatabaseClass.getMessages();
-
     public MessageService() throws ClassNotFoundException, SQLException {
         Class.forName(jdbcDriver);
         connection = DriverManager.getConnection(databaseURL, username, password);

@@ -1,6 +1,5 @@
 package resources;
 
-import exception.DataNotFoundException;
 import jakarta.ws.rs.BeanParam;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.DELETE;

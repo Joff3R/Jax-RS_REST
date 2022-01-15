@@ -1,21 +1,28 @@
 package database;
 
+import lombok.Getter;
+import lombok.SneakyThrows;
 import model.Message;
 import model.Profile;
 
+import java.sql.Connection;
+import java.sql.DriverManager;
 import java.util.HashMap;
 import java.util.Map;
 
+@Getter
 public class DatabaseClass {
 
-    private static Map<Long, Message> messages = new HashMap<>();
-    private static Map<String, Profile> profiles = new HashMap<>();
+    private final String username = "root";
+    private final String password = "root";
+    private final String databaseURL = "jdbc:mysql://localhost:3306/app?autoReconnect=true&useSSL=false";
+    private final String jdbcDriver = "com.mysql.cj.jdbc.Driver";
+    private Connection connection;
 
-    public static Map<Long, Message> getMessages() {
-        return messages;
+    @SneakyThrows
+    public DatabaseClass() {
+        Class.forName(jdbcDriver);
+        connection = DriverManager.getConnection(databaseURL, username, password);
     }
 
-    public static Map<String, Profile> getProfiles() {
-        return profiles;
-    }
 }
