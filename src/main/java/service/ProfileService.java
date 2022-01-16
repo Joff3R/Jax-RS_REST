@@ -90,6 +90,7 @@ public class ProfileService {
             statement.setString(2, profile.getLastName());
             statement.setInt(3, profile.getAge());
             statement.setDate(4, Date.valueOf(profile.getCreated()));
+            statement.setInt(5, profile.getId());
             statement.executeUpdate();
 
         } catch (SQLException e) {
