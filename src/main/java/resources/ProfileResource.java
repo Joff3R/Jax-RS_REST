@@ -1,5 +1,6 @@
 package resources;
 
+import jakarta.ws.rs.BeanParam;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.DELETE;
 import jakarta.ws.rs.GET;
@@ -10,6 +11,7 @@ import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 import model.Profile;
+import resources.beans.MessageFilterBean;
 import service.ProfileService;
 
 import java.util.List;
@@ -19,10 +21,13 @@ import java.util.List;
 @Consumes(MediaType.APPLICATION_JSON)
 public class ProfileResource {
 
-    private ProfileService profileService = new ProfileService();
+    private final ProfileService profileService = new ProfileService();
 
     @GET
-    public List<Profile> getProfiles() {
+    public List<Profile> getProfiles(@BeanParam MessageFilterBean bean) {
+        if(bean.getYear() > 0) {
+            return profileService.getAllProfilesForYear(bean.getYear());
+        }
         return profileService.getAllProfiles();
     }
 
@@ -32,22 +37,22 @@ public class ProfileResource {
     }
 
     @GET
-    @Path("/{profileName}")
-    public Profile getProfile(@PathParam("profileName") String profileName) {
-        return profileService.getProfile(profileName);
+    @Path("/{id}")
+    public Profile getProfile(@PathParam("id") int id) {
+        return profileService.getProfile(id);
     }
 
     @PUT
-    @Path("/{profileName}")
-    public Profile updateProfile(@PathParam("profileName") String profileName, Profile profile) {
-        profile.setProfileName(profileName);
+    @Path("/{id}")
+    public Profile updateProfile(@PathParam("id") int id, Profile profile) {
+        profile.setId(id);
         return profileService.updateProfile(profile);
     }
 
     @DELETE
-    @Path("/{profileName}")
-    public void deleteMessage(@PathParam("profileName") String profileName) {
-        profileService.removeProfile(profileName);
+    @Path("/{id}")
+    public void deleteMessage(@PathParam("id") int id) {
+        profileService.removeProfile(id);
     }
 
 

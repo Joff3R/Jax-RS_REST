@@ -4,6 +4,9 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
+
+import java.time.LocalDate;
 
 @Getter
 @Setter
@@ -11,9 +14,9 @@ import lombok.Setter;
 @AllArgsConstructor
 public class Profile {
 
-    private long id;
-    private String profileName;
+    private int id;
     private String firstName;
     private String lastName;
-
+    private LocalDate created;
+    private int age;
 }
