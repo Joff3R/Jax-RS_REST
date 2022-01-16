@@ -9,6 +9,4 @@ import lombok.Setter;
 public class MessageFilterBean {
 
     private @QueryParam("year") int year;
-    private @QueryParam("start") int start;
-    private @QueryParam("size") int size;
 }

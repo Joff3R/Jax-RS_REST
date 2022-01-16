@@ -7,6 +7,7 @@ import java.sql.Date;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class ProfileService {
 
@@ -61,6 +62,12 @@ public class ProfileService {
         }
 
         return profile;
+    }
+
+    public List<Profile> getAllProfilesForYear(int year) {
+        return getAllProfiles().stream()
+                .filter(e -> e.getCreated().getYear() == year)
+                .collect(Collectors.toList());
     }
 
     public Profile addProfile(Profile profile) {
